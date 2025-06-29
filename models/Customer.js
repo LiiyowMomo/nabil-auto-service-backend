@@ -17,10 +17,11 @@ const mongoose = require("mongoose");
 const customerSchema = new mongoose.Schema({
   customerID: { type: Number, unique: true },
   name: { type: String, required: true },
-  phone: { type: String, required: true },
+  phone: { type: String, required: true, match: /^\d{10}$/ }, // Ensure phone is a 10-digit number
   vehicle: { type: String, required: true },
-  service: { type: String, required: true },
+  service: [{ type: String, required: true }], // Allow multiple services
   message: { type: String },
+  jobStatus: { type: String, enum: ["Pending", "Started", "Completed"], default: "Pending" },
 }, { timestamps: true });
 
 // Use the model name 'Customer' so Mongoose will look in 'customers' collection

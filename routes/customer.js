@@ -128,4 +128,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Fetch all customers
+router.get('/', async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    res.status(200).json(customers);
+  } catch (err) {
+    console.error('Error fetching customers:', err);
+    res.status(500).json({ error: 'Failed to fetch customers' });
+  }
+});
+
+
+
 module.exports = router;
