@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const { generateToken } = require("../config/jwt");
+const { generateToken, verifyToken } = require("../config/jwt");
 const rateLimit = require("express-rate-limit");
 
 // Limit to 3 failed login attempts per 15 minutes per IP
@@ -38,6 +38,30 @@ router.post("/login", loginLimiter, async (req, res) => {
     res.json({ token, role: user.role });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get all users (superadmin only)
+router.get("/users", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const token = authHeader.split(" ")[1];
+    let payload;
+    try {
+      payload = verifyToken(token);
+    } catch (err) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    if (payload.role !== "superadmin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    const users = await User.find({}, "username role");
+    res.json({ users });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 });
 

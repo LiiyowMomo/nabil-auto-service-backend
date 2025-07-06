@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const customerRoutes = require('./routes/Customer');  
+const customerRoutes = require('./routes/customer');  
 const AuthRoutes = require('./routes/Authentication'); // Assuming you have an Authentication route
 const jobRoutes = require('./routes/job'); // Assuming you have a job route
 
