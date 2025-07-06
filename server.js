@@ -6,8 +6,10 @@ const customerRoutes = require('./routes/customer');
 const AuthRoutes = require('./routes/Authentication'); // Assuming you have an Authentication route
 const jobRoutes = require('./routes/job'); // Assuming you have a job route
 
-dotenv.config();
+dotenv.config({ path: __dirname + '/.env' });
 const app = express();
+
+console.log('MONGO_URI:', process.env.MONGO_URI); // Debug log
 
 app.use(cors());
 app.use(express.json());
