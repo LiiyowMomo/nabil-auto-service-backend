@@ -65,4 +65,36 @@ router.get("/users", async (req, res) => {
   }
 });
 
+// Delete user (superadmin only)
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const token = authHeader.split(" ")[1];
+    let payload;
+    try {
+      payload = verifyToken(token);
+    } catch (err) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    if (payload.role !== "superadmin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    
+    const { id } = req.params;
+    const deletedUser = await User.findByIdAndDelete(id);
+    
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    res.status(200).json({ message: "User deleted successfully", deletedUser: { username: deletedUser.username, role: deletedUser.role } });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ message: "Failed to delete user" });
+  }
+});
+
 module.exports = router;

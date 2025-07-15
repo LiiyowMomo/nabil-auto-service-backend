@@ -39,10 +39,17 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Fetch all customers
+// Fetch all customers with optional status filter
 router.get('/', async (req, res) => {
   try {
-    const customers = await Customer.find();
+    const { status } = req.query;
+    let filter = {};
+    
+    if (status) {
+      filter.jobStatus = status;
+    }
+    
+    const customers = await Customer.find(filter).sort({ createdAt: -1 });
     res.status(200).json(customers);
   } catch (err) {
     console.error('Error fetching customers:', err);
@@ -50,5 +57,21 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ... rest of your existing routes
+// Delete a customer/job
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedCustomer = await Customer.findByIdAndDelete(id);
+    
+    if (!deletedCustomer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+    
+    res.status(200).json({ message: 'Customer deleted successfully', deletedCustomer });
+  } catch (err) {
+    console.error('Error deleting customer:', err);
+    res.status(500).json({ error: 'Failed to delete customer' });
+  }
+});
+
 module.exports = router;
