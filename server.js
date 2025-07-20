@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const customerRoutes = require('./routes/customer');  
 const AuthRoutes = require('./routes/Authentication'); // Assuming you have an Authentication route
 const jobRoutes = require('./routes/job'); // Assuming you have a job route
+const waitTimeRoutes = require('./routes/waitTime');
 
 dotenv.config({ path: __dirname + '/.env' });
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/customers", customerRoutes);
 app.use("/auth/api", AuthRoutes); // Authentication routes
 app.use("/api/jobs", jobRoutes); // Job routes
+app.use("/api/waittime", waitTimeRoutes); // Wait time estimation routes
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
